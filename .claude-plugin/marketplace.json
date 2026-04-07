@@ -1,0 +1,15 @@
+{
+  "name": "kgskills",
+  "owner": {
+    "name": "Ethics03",
+    "url": "https://github.com/Ethics03"
+  },
+  "plugins": [
+    {
+      "name": "mykg",
+      "source": "./",
+      "description": "Universal Knowledge Graph — LLM-maintained personal wiki",
+      "version": "1.0.0"
+    }
+  ]
+}

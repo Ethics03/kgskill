@@ -30,32 +30,23 @@ mkdir -p ~/.config/opencode/command
 cp commands/*.md ~/.config/opencode/command/
 ```
 
-### Claude Code (Plugin — recommended)
+### Claude Code (Marketplace — recommended)
 
-Install via the Claude Code plugin system:
-
-```bash
-# From the repo directory
-claude --plugin-dir . install
 ```
-
-Or add to your Claude Code settings by pointing at the repo. The plugin manifest is at `.claude-plugin/plugin.json` and registers the skill and all commands automatically under the `mykg` namespace.
+/plugin marketplace add Ethics03/kgskills
+/plugin install mykg@kgskills
+```
 
 ### Claude Code (Manual)
 
 ```bash
-# 1. Add skill to user-level CLAUDE.md (loaded in every session)
-#    Uses Claude Code's @ import syntax to reference the file
-mkdir -p ~/.claude
-echo "" >> ~/.claude/CLAUDE.md
-echo "@$(pwd)/SKILL.md" >> ~/.claude/CLAUDE.md
+# Copy skills into your .claude folder
+cp -r skills/ ~/.claude/skills/
 
-# 2. Install commands
+# Copy commands
 mkdir -p ~/.claude/commands
 cp commands/*.md ~/.claude/commands/
 ```
-
-> **Note:** Claude Code loads `~/.claude/CLAUDE.md` globally. The `@path` import pulls in `SKILL.md` by reference, so updates to the file are picked up automatically. If you move the repo, update the path in `~/.claude/CLAUDE.md`.
 
 ### Other AI Agents
 
