@@ -189,10 +189,6 @@ kgskills/
 ├── skills/mykg/                  # Plugin skill entry (symlink to SKILL.md)
 ├── templates/kg-init/            # New KG scaffold
 ├── project-templates/init/       # New project scaffold
-├── references/                   # Companion skills (bundled for convenience)
-│   ├── obsidian-markdown/        # Obsidian wikilink/frontmatter syntax
-│   ├── obsidian-cli/             # Obsidian vault interaction
-│   └── defuddle/                 # Clean markdown extraction from URLs
 └── docs/
     ├── concepts.md
     └── examples.md
@@ -255,6 +251,16 @@ MyKG/
 - **Graph view** — see wiki structure, find orphans
 - **Git repo** — version history for free
 - **Good answers → wiki pages** — queries compound knowledge too
+
+## Companion Skills
+
+Install skills from [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills) for enhanced mykg workflows:
+
+| Skill | Benefit |
+|-------|---------|
+| `obsidian-markdown` | Correct wikilink, frontmatter, and callout syntax when writing wiki pages |
+| `obsidian-cli` | Open and search notes directly when the KG lives in an Obsidian vault |
+| `defuddle` | Clean markdown extraction from URLs when ingesting web sources |
 
 ## Why I Built This
 

@@ -34,7 +34,7 @@ Point your Obsidian vault at the `MYKG_PATH` for graph view, backlinks, and brow
 
 ## Optional Skill Integrations
 
-These companion skills enhance mykg when installed. They are bundled in `references/` for convenience.
+These companion skills from [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills) enhance mykg when installed.
 
 | Skill | When to use |
 |-------|-------------|
