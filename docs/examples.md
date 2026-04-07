@@ -47,7 +47,7 @@ Updates:
 
 ### Query Example
 
-`/kg search transformers`
+`/kg-query search transformers`
 
 Finds:
 - `wiki/concepts/transformers.md` — Main concept page

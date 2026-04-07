@@ -2,7 +2,7 @@
 
 An LLM-maintained personal knowledge graph. Incrementally build a structured wiki of markdown files — reading sources, extracting knowledge, updating pages, and keeping everything connected.
 
-Based on the [LLM Wiki](https://github.com/geoffreylitt/llm-wiki) pattern.
+Based on the [LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) pattern by Andrej Karpathy.
 
 ## What is this?
 
@@ -30,14 +30,20 @@ mkdir -p ~/.config/opencode/command
 cp commands/*.md ~/.config/opencode/command/
 ```
 
-### Claude Code (Marketplace — recommended)
+### Marketplace
 
 ```
-/plugin marketplace add Ethics03/kgskills
-/plugin install mykg@kgskills
+/plugin marketplace add https://github.com/Ethics03/kgskill
+/plugin install mykg@kgskill
 ```
 
-### Claude Code (Manual)
+### npx skills
+
+```
+npx skills add https://github.com/Ethics03/kgskill.git
+```
+
+### Manual
 
 ```bash
 # Copy skills into your .claude folder

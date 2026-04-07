@@ -2,112 +2,41 @@
 description: Health check the Knowledge Graph - find orphans, contradictions, gaps, stale claims
 ---
 
-# KG Lint Command
+Health check the Knowledge Graph. Find orphans, contradictions, missing cross-references, stale claims, and data gaps. If `fix` was passed as an argument, auto-fix simple issues.
 
-Check wiki health: find orphans, contradictions, missing cross-references, and gaps.
+## Steps
 
-## Usage
+**1. Resolve KG path**
 
-`/kg-lint [fix]`
+Check in order: `$MYKG_PATH` env var → `~/.config/mykg/config` → `~/.mykgrc` → common locations (`~/MyKG`, `~/Dev/Obsidian/MyKG`). If not found, tell the user to run `/kg-setup` first.
 
-Add `fix` to automatically fix simple issues.
+**2. Orphan check**
 
-## Implementation
+Read all `.md` files under `wiki/`. For each page, check whether any other wiki page links to it via `[[PageName]]`. Report pages with no inbound links.
 
-### Step 1: Resolve KG Path
+**3. Contradiction check**
 
-```bash
-KG_PATH=$(resolve_kg_path)
-```
+Scan wiki pages for explicit contradiction markers (`contradicts`, `conflicts`, `vs`, `but`). Also read related entity/concept pages and flag where the same claim appears with different values.
 
-### Step 2: Orphan Check
+**4. Missing cross-references**
 
-Find pages with no inbound links:
+Find entity or concept names that appear as plain text in wiki pages but are never linked as `[[wikilinks]]`. These are candidates for adding links.
 
-```bash
-# Find all wiki pages
-find "$KG_PATH/wiki" -name "*.md" -type f
+**5. Broken wikilinks**
 
-# For each page, check if any other page links to it
-# Orphan if no inbound links found
-```
+Find all `[[links]]` in wiki pages and check if the target file exists. Report any that point to missing pages.
 
-Report:
-```
-## Orphan Pages
+**6. Stale claims**
 
-These pages have no inbound links:
+Check source dates in frontmatter. Flag claims sourced only from old entries where newer sources on the same topic exist.
 
-- [[wiki/entities/X]] - consider adding links from related pages
-- [[wiki/concepts/Y]] - consider adding links from related pages
-```
+**7. Data gaps**
 
-### Step 3: Contradiction Check
+Read `Active.md` for open questions. Read synthesis pages for unanswered questions. Flag sparse entity/concept pages (fewer than 2 sources).
 
-Find pages with potential contradictions:
+**8. Report**
 
-Look for:
-- Same entity/concept described differently
-- Conflicting claims between sources
-- Outdated information
-
-```bash
-# Search for contradiction markers
-grep -r "contradicts\|conflicts\|vs\|but" "$KG_PATH/wiki"
-```
-
-Report:
-```
-## Contradictions
-
-These pages have conflicting information:
-
-- [[wiki/entities/X]]: Claim A vs [[wiki/entities/Y]]: Claim B
-- [[wiki/concepts/Z]]: Sources disagree on key point
-```
-
-### Step 4: Missing Cross-References
-
-Find pages that should link but don't:
-
-```bash
-# For each entity, check if concept pages mention it
-# For each concept, check if entity pages use it
-```
-
-### Step 5: Stale Claims
-
-Find claims that may be outdated:
-
-```bash
-# Check source dates
-# Flag claims from old sources
-# Note if newer sources exist on same topic
-```
-
-### Step 6: Missing Pages
-
-Find concepts/entities mentioned but not defined:
-
-```bash
-# Find all wikilinks
-grep -roh '\[\[[^]]+\]\]' "$KG_PATH/wiki"
-
-# Check if target exists
-# Report missing pages
-```
-
-### Step 7: Data Gaps
-
-Find areas that need more sources:
-
-```bash
-# Check Active.md for questions to investigate
-# Check synthesis pages for open questions
-# Note sparse entity/concept pages
-```
-
-### Step 8: Generate Report
+Output a structured lint report:
 
 ```
 # KG Lint Report
@@ -116,48 +45,36 @@ Find areas that need more sources:
 - Orphan pages: X
 - Contradictions: X
 - Missing cross-refs: X
+- Broken wikilinks: X
 - Stale claims: X
-- Missing pages: X
 - Data gaps: X
 
-## Details
+## Orphan Pages
+- [[wiki/X]] — no inbound links
 
-### Orphan Pages
-[List]
+## Contradictions
+- [[wiki/A]] and [[wiki/B]] conflict on <claim>
 
-### Contradictions
-[List]
+## Missing Cross-References
+- "Term X" appears in [[wiki/Y]] but has no link
 
-### Missing Cross-References
-[List]
+## Broken Wikilinks
+- [[wiki/Missing]] referenced in [[wiki/Z]]
 
-### Stale Claims
-[List]
+## Stale Claims
+- [[concepts/X]] last sourced YYYY-MM-DD
 
-### Missing Pages
-[List]
-
-### Data Gaps
-[List]
+## Data Gaps
+- [[concepts/Y]] has only 1 source
 
 ## Recommendations
-
-1. [Action item 1]
-2. [Action item 2]
+1. ...
 ```
 
-### Step 9: Fix Mode (Optional)
+**9. Fix mode**
 
-If `fix` argument provided:
+If `fix` argument was given, auto-fix only:
+- Add missing wikilinks for clearly matched pages
+- Update `updated` frontmatter dates on modified pages
 
-```bash
-# Auto-fix simple issues:
-# - Add missing cross-references
-# - Update last modified dates
-# - Merge duplicate mentions
-```
-
-Do NOT auto-fix:
-- Contradictions (require human judgment)
-- Data gaps (need new sources)
-- Complex cross-references
+Do NOT auto-fix contradictions (require judgment) or data gaps (need new sources).

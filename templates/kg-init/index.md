@@ -7,7 +7,7 @@ Catalog of all wiki pages. The LLM reads this first to find relevant content.
 Pages for specific entities: people, organizations, tools, places.
 
 | Page | Summary | Sources |
-|------|---------|---------||
+|------|---------|---------|
 
 
 ## Concepts
@@ -15,7 +15,7 @@ Pages for specific entities: people, organizations, tools, places.
 Pages for ideas, topics, themes, frameworks.
 
 | Page | Summary | Sources |
-|------|---------|---------||
+|------|---------|---------|
 
 
 
@@ -24,7 +24,7 @@ Pages for ideas, topics, themes, frameworks.
 High-level summaries and overviews.
 
 | Page | Summary | Sources |
-|------|---------|---------||
+|------|---------|---------|
 
 
 
@@ -33,7 +33,7 @@ High-level summaries and overviews.
 Side-by-side analyses and trade-offs.
 
 | Page | Summary | Sources |
-|------|---------|---------||
+|------|---------|---------|
 
 
 
@@ -50,7 +50,7 @@ Summaries of individual sources.
 Subdirectories with project-specific knowledge.
 
 | Project | Description |
-|---------|-------------||
+|---------|-------------|
 
 
 

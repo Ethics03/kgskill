@@ -2,109 +2,37 @@
 description: Create a new project in the Knowledge Graph with ADR tracking
 ---
 
-# KG Project Command
+Create a new project folder in the Knowledge Graph. The argument is the project name; an optional second argument is a description.
 
-Create a new project folder in the Knowledge Graph.
+## Steps
 
-## Usage
+**1. Resolve KG path**
 
-The user will call this as `/kg-project <name> [<description>]`
+Check in order: `$MYKG_PATH` env var → `~/.config/mykg/config` → `~/.mykgrc` → common locations (`~/MyKG`, `~/Dev/Obsidian/MyKG`). If not found, tell the user to run `/kg-setup` first.
 
-## Implementation
+**2. Validate project name**
 
-### Step 1: Resolve KG Path
+If no name was provided, tell the user: `Usage: /kg-project <name> [description]` and stop.
 
-Check in order:
-1. `MYKG_PATH` environment variable
-2. `~/.config/mykg/config` file
-3. `~/.mykgrc` file
-4. Common locations
+Normalize the name: replace spaces with hyphens, keep only alphanumeric and hyphens.
 
+**3. Check if already exists**
+
+If `<KG_PATH>/<project-name>/` already exists, tell the user and stop.
+
+**4. Create project structure**
+
+Run:
 ```bash
-# Resolve KG path
-resolve_kg_path() {
-  # 1. Environment variable
-  if [ -n "$MYKG_PATH" ] && [ -d "$MYKG_PATH" ]; then
-    echo "$MYKG_PATH"
-    return 0
-  fi
-  
-  # 2. Config file
-  if [ -f "$HOME/.config/mykg/config" ]; then
-    local path=$(cat "$HOME/.config/mykg/config")
-    if [ -d "$path" ]; then
-      echo "$path"
-      return 0
-    fi
-  fi
-  
-  # 3. Legacy config
-  if [ -f "$HOME/.mykgrc" ]; then
-    local path=$(cat "$HOME/.mykgrc")
-    if [ -d "$path" ]; then
-      echo "$path"
-      return 0
-    fi
-  fi
-  
-  # 4. Common locations
-  for loc in "$HOME/MyKG" "$HOME/Dev/Obsidian/MyKG" "$HOME/Documents/MyKG"; do
-    if [ -d "$loc" ]; then
-      echo "$loc"
-      return 0
-    fi
-  done
-  
-  # Not found
-  echo "KG path not found. Run /kg-setup or /kg-init first."
-  return 1
-}
-
-MYKG_PATH=$(resolve_kg_path)
-if [ $? -ne 0 ]; then
-  exit 1
-fi
+mkdir -p <KG_PATH>/<name>/{Architecture,Decisions,Plans,Analysis}
 ```
 
-### Step 2: Get Project Name
+**5. Write `Decisions/README.md`**
 
-```bash
-PROJECT_NAME="$1"
-PROJECT_DESC="${2:-$PROJECT_NAME}"
-
-if [ -z "$PROJECT_NAME" ]; then
-  echo "Usage: /kg-project <name> [description]"
-  exit 1
-fi
-
-# Normalize name (alphanumeric, hyphens)
-PROJECT_NAME=$(echo "$PROJECT_NAME" | tr ' ' '-' | tr -cd 'a-zA-Z0-9-')
 ```
-
-### Step 3: Check if Project Exists
-
-```bash
-if [ -d "$MYKG_PATH/$PROJECT_NAME" ]; then
-  echo "Project '$PROJECT_NAME' already exists"
-  ls -la "$MYKG_PATH/$PROJECT_NAME"
-  exit 0
-fi
-```
-
-### Step 4: Create Project Structure
-
-```bash
-mkdir -p "$MYKG_PATH/$PROJECT_NAME"/{Architecture,Decisions,Plans,Analysis}
-```
-
-### Step 5: Create Decisions README
-
-Create `$MYKG_PATH/$PROJECT_NAME/Decisions/README.md`:
-
-```markdown
 # Decisions
 
-Architecture Decision Records (ADRs) for $PROJECT_NAME.
+Architecture Decision Records (ADRs) for <name>.
 
 ## Index
 
@@ -117,36 +45,32 @@ Architecture Decision Records (ADRs) for $PROJECT_NAME.
 
 ## Creating a New ADR
 
-1. Update the number above (e.g.,001 → 002)
-2. Copy `../../Decision Template.md`
-3. Create `ADR-XXX - Title.md`
-4. Fill in: Context, Decision, Consequences, Alternatives
-5. Update this index
-6. Update `../../index.md`
-7. Add entry to `../../log.md`
+1. Update the number above
+2. Create `ADR-XXX - Title.md`
+3. Fill in: Context, Decision, Consequences, Alternatives
+4. Update this index
+5. Update root `index.md`
+6. Add entry to root `log.md`
 ```
 
-### Step 6: Create Project SKILL.md (optional)
+**6. Write `SKILL.md`**
 
-Create `$MYKG_PATH/$PROJECT_NAME/SKILL.md`:
-
-```markdown
+```
 ---
-name: ${PROJECT_NAME}-skill
-description: Project-specific instructions for ${PROJECT_NAME}. Use when working on codebase or making decisions.
+name: <name>-skill
+description: Project-specific instructions for <name>. Use when working on this project.
 ---
 
-# ${PROJECT_NAME} Skill
+# <name>
 
 ## Project Overview
 
-[Description: ${PROJECT_DESC}]
+<description>
 
 ## Tech Stack
 
 | Component | Technology |
 |-----------|------------|
-| | |
 
 ## Key Architecture Decisions
 
@@ -158,12 +82,7 @@ See [[Active]] for current focus items.
 
 ## Project Conventions
 
-### Code Style
 - [Add conventions]
-
-### Naming
-- Files: [Convention]
-- Components: [Convention]
 
 ## Key Files
 
@@ -173,41 +92,20 @@ See [[Active]] for current focus items.
 | `Decisions/README.md` | ADR index |
 ```
 
-### Step 7: Update Root index.md
+**7. Update root `index.md`**
 
-Add the new project to `$MYKG_PATH/index.md`:
-
-```markdown
-## Projects
-
-| Project | Description |
-|---------|-------------|
-| [[${PROJECT_NAME}/]] | ${PROJECT_DESC} |
+Add the project to the Projects table:
+```
+| [[<name>/]] | <description> |
 ```
 
-### Step 8: Update Root log.md
-
-```markdown
-## $(date +%Y-%m-%d)
-
-- Created project **${PROJECT_NAME}** - [[${PROJECT_NAME}/]]
-```
-
-### Step 9: Success Message
+**8. Append to root `log.md`**
 
 ```
-✓ Project '${PROJECT_NAME}' created at $MYKG_PATH/$PROJECT_NAME
-
-Structure:
-├── SKILL.md
-├── Architecture/
-├── Decisions/
-│   └── README.md
-├── Plans/
-└── Analysis/
-
-Next:
-1. Edit SKILL.md with project details
-2. Create Architecture/Overview.md
-3. Add your first ADR: /kg-decision ${PROJECT_NAME} "Decision Title"
+## [YYYY-MM-DD] project | Create <name>
+- Created project [[<name>/]]
 ```
+
+**9. Report**
+
+Tell the user the project was created, show the path and structure, and suggest next steps: edit `SKILL.md` with project details, create `Architecture/Overview.md`.

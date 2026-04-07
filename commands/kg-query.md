@@ -1,130 +1,54 @@
 ---
-description: Query KG - use 'active', 'recent', 'search <term>', 'decisions <project>', or 'plan <project>'
+description: Query KG (supports: active, recent, search <term>, decisions <project>, plan <project>)
 ---
 
-# KG Query Command
+Answer the user's question by searching and synthesizing knowledge from the wiki. This is not a grep — read pages, follow links, and produce a synthesized answer with wikilink citations.
 
-Query the Knowledge Graph for architectural decisions, plans, analysis, and project context.
+## Steps
 
-## Usage
+**1. Resolve KG path**
 
-The user will call this as `/kg <subcommand> [<args>]`
+Check in order: `$MYKG_PATH` env var → `~/.config/mykg/config` → `~/.mykgrc` → common locations (`~/MyKG`, `~/Dev/Obsidian/MyKG`). If not found, tell the user to run `/kg-setup` first.
 
-### Subcommands
+**2. Handle utility subcommands**
 
-1. **`/kg active`** - Show current priorities from Active.md
-2. **`/kg recent`** - Show last 10 entries from log.md
-3. **`/kg search <term>`** - Search allpages for the term
-4. **`/kg decisions <project>`** - List all ADRs for a project
-5. **`/kg plan <project>`** - Show plans for a project
+If the query is one of these, handle it directly and stop:
 
-## Implementation
+- `active` — read and display `Active.md`
+- `recent` — read `log.md` and show the last 10 entries
+- `decisions <project>` — read `<project>/Decisions/README.md` and list ADRs; offer to read any in full
+- `plan <project>` — list files in `<project>/Plans/` and offer to read any
 
-### Step 1: Resolve KG Path
+**3. For all other queries — synthesize from the wiki**
 
-Check in order:
-1. `MYKG_PATH` environment variable
-2. `~/.config/mykg/config` file
-3. `~/.mykgrc` file
-4. Common locations: `~/MyKG`, `~/Dev/Obsidian/MyKG`
+This is the main path.
 
-```bash
-# Resolve KG path
-resolve_kg_path() {
-  # 1. Environment variable
-  if [ -n "$MYKG_PATH" ] && [ -d "$MYKG_PATH" ]; then
-    echo "$MYKG_PATH"
-    return 0
-  fi
-  
-  # 2. Config file
-  if [ -f "$HOME/.config/mykg/config" ]; then
-    local path=$(cat "$HOME/.config/mykg/config")
-    if [ -d "$path" ]; then
-      echo "$path"
-      return 0
-    fi
-  fi
-  
-  # 3. Legacy config
-  if [ -f "$HOME/.mykgrc" ]; then
-    local path=$(cat "$HOME/.mykgrc")
-    if [ -d "$path" ]; then
-      echo "$path"
-      return 0
-    fi
-  fi
-  
-  # 4. Common locations
-  for loc in "$HOME/MyKG" "$HOME/Dev/Obsidian/MyKG" "$HOME/Documents/MyKG"; do
-    if [ -d "$loc" ]; then
-      echo "$loc"
-      return 0
-    fi
-  done
-  
-  # Not found
-  echo "KG path not found. Run /kg-setup to configure."
-  return 1
-}
+**3a. Find relevant pages**
 
-KG_PATH=$(resolve_kg_path)
-if [ $? -ne 0 ]; then
-  exit 1
-fi
+Read `index.md`. Scan the catalog for pages relevant to the query — entities, concepts, synthesis, comparisons, source summaries. Pick the most relevant ones.
+
+**3b. Read and follow**
+
+Read the selected pages. Follow `[[wikilinks]]` to related pages where they add depth. Keep reading until you have enough to answer well — typically 3–8 pages.
+
+**3c. Synthesize an answer**
+
+Write a real answer, not a list of file contents. Integrate what you found across pages. Use `[[Page Name]]` citations inline so the user knows where claims come from.
+
+**3d. Note conflicts**
+
+If pages contradict each other on a relevant point, surface the contradiction explicitly rather than picking one silently.
+
+**4. Offer to file the answer back**
+
+After answering, ask: "Should I save this as a wiki page?" Good candidates:
+- A comparison or analysis that took multiple pages to synthesize
+- A connection between concepts that isn't captured anywhere yet
+- An answer that would save time on a future query
+
+If yes, write it to the appropriate location (`wiki/synthesis/`, `wiki/comparisons/`, etc.), update `index.md`, and append to `log.md`:
 ```
-
-### Step 2: Execute Subcommand
-
-Based on the user's subcommand:
-
-#### `/kg active`
-```bash
-cat "$KG_PATH/Active.md"
+## [YYYY-MM-DD] query | <Question>
+- Synthesized: [[wiki/synthesis/<slug>]]
+- Sources: [[wiki/X]], [[concepts/Y]]
 ```
-Show current priorities and focus items.
-
-#### `/kg recent`
-```bash
-tail -50 "$KG_PATH/log.md"
-```
-Show recent changes.
-
-#### `/kg search <term>`
-```bash
-grep -ri "<term>" "$KG_PATH" --include="*.md" | head -20
-```
-Search for the term across all pages.
-
-#### `/kg decisions <project>`
-```bash
-ls -la "$KG_PATH/<project>/Decisions/"
-cat "$KG_PATH/<project>/Decisions/README.md"
-```
-List all ADRs and show the index.
-
-#### `/kg plan <project>`
-```bash
-ls -la "$KG_PATH/<project>/Plans/"
-```
-List all plans for the project.
-
-### Step 3: Format Output
-
-Present the results in a readable format:
-- For lists: use bullet points or tables
-- For files: show title and summary, offer to read full content
-- For searches: show file path and matching line
-
-## Error Handling
-
-- If KG path not found: Run `/kg-setup` to configure
-- If project not found: List available projects from index.md
-- If file not found: Suggest similar files or check index.md
-
-## After Querying
-
-After showing results, offer to:
-- Read full content of a specific file
-- Navigate to related pages via wikilinks
-- Add new content (decision, plan, analysis)
