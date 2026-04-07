@@ -263,14 +263,6 @@ Install skills from [kepano/obsidian-skills](https://github.com/kepano/obsidian-
 
 This pattern is inspired by **Andrej Karpathy's approach** to knowledge management. His insight was that knowledge bases should be living artifacts that grow with you — not static repositories that rot.
 
-The core idea:
-
-1. **Manual wikis** — You do all the work. Maintaining cross-references, updating summaries, keeping things organized. It's tedious and knowledge bases rot.
-
-2. **RAG systems** — Upload documents, query them. But the LLM rediscovers everything from scratch each time. No accumulation, no compounding.
-
-Karpathy's approach is different. The wiki is a **persistent artifact** that the LLM maintains. Cross-references are already there. Contradictions are already flagged. The synthesis already reflects everything you've read.
-
 The insight: LLMs are great at the tedious work — touching 15 files in one pass, maintaining consistency, updating cross-references. They don't get bored.
 
 I extended this with **project-specific customization**. A research project needs different entity types than reading a novel. The two-tier skill system lets each project have its own domain model while sharing the universal infrastructure.
