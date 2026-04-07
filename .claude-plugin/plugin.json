@@ -1,6 +1,6 @@
 {
   "name": "mykg",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Universal Knowledge Graph — LLM-maintained personal wiki. Ingest sources, query and synthesize knowledge, maintain cross-referenced wiki pages.",
   "author": {
     "name": "Ethics03",
