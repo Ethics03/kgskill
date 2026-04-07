@@ -1,0 +1,15 @@
+{
+  "name": "mykg",
+  "version": "1.0.0",
+  "description": "Universal Knowledge Graph — LLM-maintained personal wiki. Ingest sources, query and synthesize knowledge, maintain cross-referenced wiki pages.",
+  "author": {
+    "name": "Ethics03",
+    "url": "https://github.com/Ethics03/kgskills"
+  },
+  "homepage": "https://github.com/Ethics03/kgskills",
+  "repository": "https://github.com/Ethics03/kgskills",
+  "license": "MIT",
+  "keywords": ["knowledge-graph", "wiki", "notes", "rag", "research", "obsidian"],
+  "skills": "./skills/",
+  "commands": "./commands/"
+}
