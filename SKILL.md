@@ -32,6 +32,18 @@ echo "/path/to/your/kg" > ~/.config/mykg/config
 
 Point your Obsidian vault at the `MYKG_PATH` for graph view, backlinks, and browsing.
 
+## Optional Skill Integrations
+
+These companion skills enhance mykg when installed. They are bundled in `references/` for convenience.
+
+| Skill | When to use |
+|-------|-------------|
+| `obsidian-markdown` | Use when creating or editing wiki pages — ensures correct wikilink syntax (`[[Page]]`), frontmatter, callouts, and embeds |
+| `obsidian-cli` | Use when the KG lives in an Obsidian vault — open pages, search vault content, navigate notes directly |
+| `defuddle` | Use instead of WebFetch when ingesting a URL — strips nav/clutter and returns clean markdown, saving tokens |
+
+If these skills are loaded, prefer them over raw file edits or WebFetch for the relevant operations.
+
 ## KG Path Resolution
 
 The skill resolves the KG path in this order:

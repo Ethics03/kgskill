@@ -183,16 +183,16 @@ Health check the wiki:
 
 ```
 kgskills/
+├── .claude-plugin/plugin.json    # Claude Code plugin manifest
 ├── SKILL.md                      # Universal skill
-├── commands/                     # Opencode commands
+├── commands/                     # Slash commands
+├── skills/mykg/                  # Plugin skill entry (symlink to SKILL.md)
 ├── templates/kg-init/            # New KG scaffold
-│   ├── index.md
-│   ├── log.md
-│   ├── Active.md
-│   ├── AGENTS.md
-│   └── raw/ -> empty
-│   └── wiki/ -> entities/, concepts/, synthesis/
 ├── project-templates/init/       # New project scaffold
+├── references/                   # Companion skills (bundled for convenience)
+│   ├── obsidian-markdown/        # Obsidian wikilink/frontmatter syntax
+│   ├── obsidian-cli/             # Obsidian vault interaction
+│   └── defuddle/                 # Clean markdown extraction from URLs
 └── docs/
     ├── concepts.md
     └── examples.md
